@@ -1,67 +1,110 @@
-﻿<div align="center">
+﻿<p align="center">
+  <a href="https://github.com/WangJunZzz/abp-vnext-pro">
+      <img src="https://blog-resouce.oss-cn-shenzhen.aliyuncs.com/images/abp/06.jpg">
+  </a>
+</p>
 
-[Abp Vnext Pro](https://github.com/WangJunZzz/abp-vnext-pro) 的 Vue3 实现版本 开箱即用的中后台前端/设计解决方案
+<h1 align="center">Abp Vnext Pro</h1>
 
-<table>
-    <tr>
-        <td><img src="https://blog-resouce.oss-cn-shenzhen.aliyuncs.com/images/abp/4.4/4.4login.png"/></td>
-        <td><img src="https://blog-resouce.oss-cn-shenzhen.aliyuncs.com/images/abp/4.4/4.4roole.png"/></td>
-    </tr>
-    <tr>
-         <td><img src="https://blog-resouce.oss-cn-shenzhen.aliyuncs.com/images/abp/4.4/4.4hangfire.png"/></td>
-        <td><img src="https://blog-resouce.oss-cn-shenzhen.aliyuncs.com/images/abp/4.4/4.4cap.png"/></td>
-    </tr>
-        <tr>
-         <td><img src="https://blog-resouce.oss-cn-shenzhen.aliyuncs.com/images/abp/4.4/4.4client.png"/></td>
-        <td><img src="https://blog-resouce.oss-cn-shenzhen.aliyuncs.com/images/abp/4.4/4.4identity.png"/></td>
-    </tr>
-</table>
 
-</div>
 
-#### 项目简介
+## 🔗 链接
 
-基于 ABP Vnext4.4.0 的微服务架构，基于 DDD 思想开发，基于 vue3.0,Typescript,Antd 的后台管理框架，适用于大型分布式业务系统和企业后台。
-
+- [AbpPro Vben2预览](http://182.43.18.151:44318/)
+- [AbpPro Vben5预览](http://182.43.18.151:44320/)
+- [代码生成器预览](http://182.43.18.151:44311/)
 - [文档地址](http://doc.cncore.club/)
-- [演示地址 ](http://120.24.194.14:8012/)
+- [国内文档地址](http://doc.china.cncore.club:81/)
+- [视频教程](https://www.bilibili.com/video/BV1pt4y1E7aZ)
+- [代码生成器仓库地址](https://github.com/WangJunZzz/abp-vnext-pro-suite)
 
-- 用户名：admin 密码：1q2w3E\*
 
-- 警告：不要修改 IdentitySever4 客户端管理的 Vue3 客户端设置，不然影响 IdentityServer4 登录
+## 📦 快速开始
 
-#### 系统功能
+- 安装Cli
+```bash
+dotnet tool install Lion.AbpPro.Cli -g
+```
+
+- 更新Cli
+```bash
+dotnet tool update Lion.AbpPro.Cli -g
+```
+
+### 三个项目模板
+- 源码版本
+
+```bash
+lion.abp new -t pro -c 公司名称 -p 项目名称 -v 版本(默认LastRelease) -o 默认当前控制台执行目录
+```
+
+- nuget版本
+
+```bash
+lion.abp new -t pro.all -c 公司名称 -p 项目名称 -v 版本(默认LastRelease) -o 默认当前控制台执行目录
+```
+
+
+- 模块
+
+```bash
+lion.abp new -t pro.module -c 公司名称 -p 项目名称 -v 版本(默认LastRelease) -o 默认当前控制台执行目录
+```
+
+
+## ✨ 系统功能
 
 - [x] 用户管理
 - [x] 角色管理
 - [x] 审计日志
 - [x] 后台任务
 - [x] 集成事件
-- [x] IdentityServer4
-  - [x] 客户端管理
-  - [x] Api 资源管理
-  - [x] ApiScope 管理
-  - [x] Identity 资源管理
-- [x] SinglaR 消息通知
+- [x] SinglaR 消息通知(站内信)
 - [x] 多语言
-- [x] FreeSql
-- [x] 数据字典(UI 暂时没有)
+- [x] 数据字典
 - [x] 容器化部署
 - [x] 单元测试
 - [x] ES 日志
 - [x] Setting 管理
 - [x] 多租户
-- [ ] 组织机构
+- [x] 文件管理
 
-### 使用
 
-- 下载代码生成器，Git 仓库(https://github.com/WangJunZzz/abp-vnext-pro-gui)
+## 🤝 如何贡献
 
-  ![](https://blog-resouce.oss-cn-shenzhen.aliyuncs.com/images/abp/gui.png)
+非常欢迎你的加入！提一个 Issue 或者提交一个 Pull Request。
 
-#### 参与贡献
+**Pull Request:**
 
-非常欢迎你的贡献，你可以通过以下方式和我们一起共建 :star2:：
+1. Fork 代码!
+2. 创建自己的分支: `git checkout -b feat/xxxx`
+3. 提交你的修改: `git commit -am 'feat(function): add xxxxx'`
+4. 推送您的分支: `git push origin feat/xxxx`
+5. 提交`pull request`
 
-- 通过 [Issue](https://github.com/WangJunZzz/abp-vnext-pro/issues) 报告:bug:或进行咨询。
-- QQ 群：686933575
+## Git 贡献提交规范
+
+- 参考
+  - `feat` 增加新功能
+  - `fix` 修复问题/BUG
+  - `style` 代码风格相关无影响运行结果的
+  - `perf` 优化/性能提升
+  - `refactor` 重构
+  - `revert` 撤销修改
+  - `test` 测试相关
+  - `docs` 文档/注释
+  - `chore` 依赖更新/脚手架配置修改等
+  - `workflow` 工作流改进
+  - `ci` 持续集成
+  - `types` 类型定义文件更改
+  - `wip` 开发中
+
+## ✒️交流
+- QQ 1群：<s>686933575(已满)</s> 
+- QQ 2群：862717726
+
+## 💖赞助
+- Star就是对该项目的最大肯定!
+- 如果你觉得这个项目对你有帮助，你可以帮作者买一杯咖啡表示支持!
+![](https://blog-resouce.oss-cn-shenzhen.aliyuncs.com/images/donate.png)
+

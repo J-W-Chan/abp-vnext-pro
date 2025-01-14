@@ -1,18 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Volo.Abp.Domain.Repositories.EntityFrameworkCore;
-using Volo.Abp.EntityFrameworkCore;
-using Lion.AbpPro.NotificationManagement.Notifications;
-
 namespace Lion.AbpPro.NotificationManagement.EntityFrameworkCore.Notifications
 {
     /// <summary>
     /// 消息通知 仓储Ef core 实现
     /// </summary>
-    public partial class EfCoreNotificationRepository :
+    public class EfCoreNotificationRepository :
         EfCoreRepository<INotificationManagementDbContext, Notification, Guid>,
         INotificationRepository
     {
@@ -21,17 +12,71 @@ namespace Lion.AbpPro.NotificationManagement.EntityFrameworkCore.Notifications
         {
         }
 
-        /// <summary>
-        /// 查找用户消息
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public async Task<Notification> FindByIdAsync(Guid id)
+        public async Task<List<Notification>> GetPagingListAsync(
+            string title,
+            string content,
+            Guid? senderUserId,
+            string senderUserName,
+            Guid? receiverUserId,
+            string receiverUserName,
+            bool? read,
+            DateTime? startReadTime,
+            DateTime? endReadTime,
+            MessageType? messageType,
+            MessageLevel? messageLevel,
+            int maxResultCount = 10,
+            int skipCount = 0,
+            CancellationToken cancellationToken = default)
         {
             return await (await GetDbSetAsync())
-                .IncludeDetails()
-                .Where(e => e.Id == id)
-                .FirstOrDefaultAsync();
+                .WhereIf(title.IsNotNullOrWhiteSpace(), e => e.Title.Contains(title))
+                .WhereIf(content.IsNotNullOrWhiteSpace(), e => e.Content.Contains(content))
+                .WhereIf(senderUserId.HasValue, e => e.SenderUserId == senderUserId.Value)
+                .WhereIf(senderUserName.IsNotNullOrWhiteSpace(), e => e.SenderUserName == senderUserName)
+                .WhereIf(receiverUserId.HasValue, e => e.ReceiveUserId == receiverUserId.Value)
+                .WhereIf(receiverUserName.IsNotNullOrWhiteSpace(), e => e.ReceiveUserName == receiverUserName)
+                .WhereIf(read.HasValue, e => e.Read == read.Value)
+                .WhereIf(startReadTime.HasValue, e => e.ReadTime >= startReadTime.Value)
+                .WhereIf(endReadTime.HasValue, e => e.ReadTime <= endReadTime.Value)
+                .WhereIf(messageType.HasValue, e => e.MessageType == messageType.Value)
+                .WhereIf(messageLevel.HasValue, e => e.MessageLevel == messageLevel.Value)
+                .OrderByDescending(e => e.CreationTime)
+                .PageBy(skipCount, maxResultCount)
+                .ToListAsync(GetCancellationToken(cancellationToken));
+        }
+
+        public async Task<long> GetPagingCountAsync(
+            string title,
+            string content,
+            Guid? senderUserId,
+            string senderUserName,
+            Guid? receiverUserId,
+            string receiverUserName,
+            bool? read,
+            DateTime? startReadTime,
+            DateTime? endReadTime,
+            MessageType? messageType,
+            MessageLevel? messageLevel,
+            CancellationToken cancellationToken = default)
+        {
+            return await (await GetDbSetAsync())
+                .WhereIf(title.IsNotNullOrWhiteSpace(), e => e.Title.Contains(title))
+                .WhereIf(content.IsNotNullOrWhiteSpace(), e => e.Content.Contains(content))
+                .WhereIf(senderUserId.HasValue, e => e.SenderUserId == senderUserId.Value)
+                .WhereIf(senderUserName.IsNotNullOrWhiteSpace(), e => e.SenderUserName == senderUserName)
+                .WhereIf(receiverUserId.HasValue, e => e.ReceiveUserId == receiverUserId.Value)
+                .WhereIf(receiverUserName.IsNotNullOrWhiteSpace(), e => e.ReceiveUserName == receiverUserName)
+                .WhereIf(read.HasValue, e => e.Read == read.Value)
+                .WhereIf(startReadTime.HasValue, e => e.ReadTime >= startReadTime.Value)
+                .WhereIf(endReadTime.HasValue, e => e.ReadTime <= endReadTime.Value)
+                .WhereIf(messageType.HasValue, e => e.MessageType == messageType.Value)
+                .WhereIf(messageLevel.HasValue, e => e.MessageLevel == messageLevel.Value)
+                .CountAsync(cancellationToken);
+        }
+
+        public async Task<List<Notification>> GetListAsync(List<Guid> ids)
+        {
+            return await (await GetDbSetAsync()).Where(e => ids.Contains(e.Id)).ToListAsync();
         }
     }
 }

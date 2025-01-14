@@ -1,11 +1,3 @@
-using System.IO;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Serilog;
-using Serilog.Events;
-
 namespace Lion.AbpPro.DbMigrator
 {
     class Program
@@ -32,6 +24,17 @@ namespace Lion.AbpPro.DbMigrator
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureLogging((context, logging) => logging.ClearProviders())
+                .ConfigureAppConfiguration
+                (
+                    otpions =>
+                    {
+                        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+                        var appSettingFileName = "appsettings.json";
+                        if (!environment.IsNullOrWhiteSpace())
+                            appSettingFileName = $"appsettings.{environment}.json";
+                        otpions.AddJsonFile(appSettingFileName, optional: true);
+                    }
+                )
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddHostedService<DbMigratorHostedService>();

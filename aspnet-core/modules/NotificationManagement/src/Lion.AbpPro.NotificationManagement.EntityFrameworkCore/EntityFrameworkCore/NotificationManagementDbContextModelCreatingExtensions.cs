@@ -1,8 +1,4 @@
-using System;
-using Microsoft.EntityFrameworkCore;
-using Volo.Abp;
-using Volo.Abp.EntityFrameworkCore.Modeling;
-using Lion.AbpPro.NotificationManagement.Notifications;
+using Lion.AbpPro.NotificationManagement.Notifications.MaxLengths;
 
 namespace Lion.AbpPro.NotificationManagement.EntityFrameworkCore
 {
@@ -15,15 +11,20 @@ namespace Lion.AbpPro.NotificationManagement.EntityFrameworkCore
 
             builder.Entity<Notification>(b =>
             {
-                b.ToTable(NotificationManagementDbProperties.DbTablePrefix + nameof(Notification),
-                    NotificationManagementDbProperties.DbSchema);
+                b.ToTable(NotificationManagementDbProperties.DbTablePrefix + "Notifications", NotificationManagementDbProperties.DbSchema);
+                b.Property(e => e.Title).IsRequired().HasMaxLength(NotificationMaxLengths.Length128);
+                b.Property(e => e.Content).IsRequired().HasMaxLength(NotificationMaxLengths.Length1024);
+                b.Property(e => e.SenderUserName).IsRequired().HasMaxLength(NotificationMaxLengths.Length128);
+                b.Property(e => e.ReceiveUserName).HasMaxLength(NotificationMaxLengths.Length128);
                 b.ConfigureByConvention();
             });
-            
+
             builder.Entity<NotificationSubscription>(b =>
             {
-                b.ToTable(NotificationManagementDbProperties.DbTablePrefix + nameof(NotificationSubscription),
-                    NotificationManagementDbProperties.DbSchema);
+                b.ToTable(NotificationManagementDbProperties.DbTablePrefix + "NotificationSubscriptions", NotificationManagementDbProperties.DbSchema);
+                b.Property(e => e.ReceiveUserName).HasMaxLength(NotificationMaxLengths.Length128);
+                b.HasIndex(e => e.NotificationId);
+                b.HasIndex(e => e.ReceiveUserId);
                 b.ConfigureByConvention();
             });
         }

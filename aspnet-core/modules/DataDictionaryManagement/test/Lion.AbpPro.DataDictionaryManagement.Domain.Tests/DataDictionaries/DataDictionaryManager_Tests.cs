@@ -1,10 +1,3 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Lion.AbpPro.DataDictionaryManagement.DataDictionaries.Exceptions;
-using Shouldly;
-using Xunit;
-
 namespace Lion.AbpPro.DataDictionaryManagement.DataDictionaries
 {
     public class DataDictionaryManager_Tests : DataDictionaryManagementDomainTestBase
@@ -20,7 +13,7 @@ namespace Lion.AbpPro.DataDictionaryManagement.DataDictionaries
         public async Task Test_FindByIdAsync_Ok()
         {
             var entity =
-                await _dataDictionaryManager.FindByIdAsync(DataDictionaryManagementConsts.SeedDataDictionaryId);
+                await _dataDictionaryManager.FindByIdAsync(DataDictionaryManagementTestConsts.SeedDataDictionaryId);
             entity.DisplayText.ShouldBe("性别");
             entity.Details.Count.ShouldBe(3);
             entity.Details.FirstOrDefault(e => e.Code == "None").IsEnabled.ShouldBeFalse();
@@ -50,7 +43,7 @@ namespace Lion.AbpPro.DataDictionaryManagement.DataDictionaries
             exception.Message.ShouldBe($"数据字典不存在");
 
             var exception1 = await Record.ExceptionAsync(async () =>
-                await _dataDictionaryManager.CreateDetailAsync(DataDictionaryManagementConsts.SeedDataDictionaryId,
+                await _dataDictionaryManager.CreateDetailAsync(DataDictionaryManagementTestConsts.SeedDataDictionaryId,
                     "Man", "明细", "测试", 1));
             exception1.Message.ShouldBe($"字典项Man已存在");
 

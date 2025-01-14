@@ -1,8 +1,3 @@
-using Lion.AbpPro.NotificationManagement.Notifications;
-using Microsoft.EntityFrameworkCore;
-using Volo.Abp.Data;
-using Volo.Abp.EntityFrameworkCore;
-
 namespace Lion.AbpPro.NotificationManagement.EntityFrameworkCore
 {
     [ConnectionStringName(NotificationManagementDbProperties.ConnectionStringName)]
@@ -18,7 +13,8 @@ namespace Lion.AbpPro.NotificationManagement.EntityFrameworkCore
 
         }
         public DbSet<Notification> Notifications { get; set; }
-        
+        public DbSet<NotificationSubscription> NotificationSubscriptions { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

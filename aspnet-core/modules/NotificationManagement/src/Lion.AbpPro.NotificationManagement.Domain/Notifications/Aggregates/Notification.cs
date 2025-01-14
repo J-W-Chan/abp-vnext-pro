@@ -1,31 +1,25 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using Lion.AbpPro.Extension.Customs;
-using Volo.Abp.Domain.Entities.Auditing;
-using Lion.AbpPro.NotificationManagement.Notifications.DistributedEvents;
+using Volo.Abp.MultiTenancy;
 
-
-namespace Lion.AbpPro.NotificationManagement.Notifications
+namespace Lion.AbpPro.NotificationManagement.Notifications.Aggregates
 {
     /// <summary>
     /// 消息通知 
     /// </summary>
-    public partial class Notification : FullAuditedAggregateRoot<Guid>
+    public class Notification : FullAuditedAggregateRoot<Guid>, IMultiTenant
     {
+        /// <summary>
+        /// 租户id
+        /// </summary>
+        public Guid? TenantId { get; private set; }
+
         /// <summary>
         /// 消息标题
         /// </summary>
-        [StringLength(NotificationMaxLengths.Title)]
-        [Required]
         public string Title { get; private set; }
 
         /// <summary>
         /// 消息内容
         /// </summary>
-        [StringLength(NotificationMaxLengths.Content)]
-        [Required]
         public string Content { get; private set; }
 
         /// <summary>
@@ -34,18 +28,47 @@ namespace Lion.AbpPro.NotificationManagement.Notifications
         public MessageType MessageType { get; private set; }
 
         /// <summary>
-        /// 发送人
+        /// 消息等级
         /// </summary>
-        public Guid SenderId { get; private set; }
+        public MessageLevel MessageLevel { get; private set; }
 
         /// <summary>
-        /// 关联属性1:N 消息订阅者集合
+        /// 发送人
         /// </summary>
-        public List<NotificationSubscription> NotificationSubscriptions { get; private set; }
+        public Guid SenderUserId { get; private set; }
 
+        /// <summary>
+        /// 发送人用户名
+        /// </summary>
+        public string SenderUserName { get; private set; }
+
+        /// <summary>
+        /// 订阅人
+        /// 消息类型是广播消息时，订阅人为空
+        /// </summary>
+        public Guid? ReceiveUserId { get; private set; }
+
+
+        /// <summary>
+        /// 接收人用户名
+        /// 消息类型是广播消息时，订接收人用户名为空
+        /// </summary>
+        public string ReceiveUserName { get; private set; }
+        
+        /// <summary>
+        /// 是否已读
+        /// </summary>
+        public bool Read { get; private set; }
+        
+        /// <summary>
+        /// 已读时间
+        /// </summary>
+        public DateTime? ReadTime { get; private set; }
+
+        
         private Notification()
         {
-            NotificationSubscriptions = new List<NotificationSubscription>();
+            
         }
 
         public Notification(
@@ -53,47 +76,66 @@ namespace Lion.AbpPro.NotificationManagement.Notifications
             string title,
             string content,
             MessageType messageType,
-            Guid senderId
+            MessageLevel messageLevel,
+            Guid senderUserId,
+            string senderUserName,
+            Guid? receiveUserId = null,
+            string receiveUserName ="",
+            DateTime? readTime = null,
+            bool read = false,
+            Guid? tenantId = null
         ) : base(id)
-        {
-            NotificationSubscriptions = new List<NotificationSubscription>();
-
-            SetProperties(
-                title,
-                content,
-                messageType,
-                senderId
-            );
-        }
-
-        private void SetProperties(
-            string title,
-            string content,
-            MessageType messageType,
-            Guid senderId
-        )
         {
             SetTitle(title);
             SetContent(content);
             SetMessageType(messageType);
-            SetSenderId(senderId);
+            SetMessageLevel(messageLevel);
+            SetSenderUserId(senderUserId);
+            SetSenderUserName(senderUserName);
+            SetReceiveUserId(receiveUserId);
+            SetReceiveUserName(receiveUserName);
+            SetTenantId(tenantId);
+            SetRead(read,readTime);
         }
+        
 
-        private void SetSenderId(Guid senderId)
+        private void SetTenantId(Guid? tenantId)
         {
-            Guard.NotEmpty(senderId, nameof(senderId));
-            SenderId = senderId;
+            TenantId = tenantId;
         }
 
+        private void SetSenderUserId(Guid senderUserId)
+        {
+            Guard.NotEmpty(senderUserId, nameof(senderUserId));
+            SenderUserId = senderUserId;
+        }
+        
+        private void SetSenderUserName(string senderUserName)
+        {
+            Guard.NotNullOrWhiteSpace(senderUserName, nameof(senderUserName), NotificationMaxLengths.Length128);
+            SenderUserName = senderUserName;
+        }
+        
+        private void SetReceiveUserId(Guid? receiveUserId)
+        {
+            ReceiveUserId = receiveUserId;
+        }
+        
+        private void SetReceiveUserName(string receiveUserName)
+        {
+            ReceiveUserName = receiveUserName;
+        }
+
+        
         private void SetTitle(string title)
         {
-            Guard.NotNullOrWhiteSpace(title, nameof(title), NotificationMaxLengths.Title);
+            Guard.NotNullOrWhiteSpace(title, nameof(title), NotificationMaxLengths.Length128);
             Title = title;
         }
 
         private void SetContent(string content)
         {
-            Guard.NotNullOrWhiteSpace(content, nameof(content), NotificationMaxLengths.Content);
+            Guard.NotNullOrWhiteSpace(content, nameof(content), NotificationMaxLengths.Length1024);
             Content = content;
         }
 
@@ -102,46 +144,24 @@ namespace Lion.AbpPro.NotificationManagement.Notifications
             MessageType = messageType;
         }
 
-        /// <summary>
-        /// 新增非广播消息订阅人
-        /// </summary>
-        /// <param name="notificationSubscriptionId"></param>
-        /// <param name="receiveId"></param>
-        public void AddNotificationSubscription(Guid notificationSubscriptionId, Guid receiveId)
+        private void SetMessageLevel(MessageLevel messageLevel)
         {
-            if (NotificationSubscriptions.Any(e => e.ReceiveId == receiveId)) return;
-            NotificationSubscriptions.Add(
-                new NotificationSubscription(notificationSubscriptionId, receiveId));
+            MessageLevel = messageLevel;
+        }
+        
+
+        public void SetRead(bool read, DateTime? readTime = null)
+        {
+            Read = read;
+            ReadTime = readTime;
         }
 
         /// <summary>
-        /// 新增消息类型为广播订阅人
+        /// 添加创建消息事件
         /// </summary>
-        /// <param name="notificationSubscriptionId"></param>
-        /// <param name="receiveId"></param>
-        public void AddBroadCastNotificationSubscription(Guid notificationSubscriptionId,
-            Guid receiveId)
+        public void AddCreatedNotificationLocalEvent(CreatedNotificationLocalEvent createdNotificationLocalEvent)
         {
-            if (NotificationSubscriptions.Any(e => e.ReceiveId == receiveId))
-            {
-                return;
-            }
-            else
-            {
-                var temp = new NotificationSubscription(notificationSubscriptionId, receiveId);
-                temp.SetRead();
-                NotificationSubscriptions.Add(temp);
-            }
-        }
-
-        /// <summary>
-        /// 添加创建消息集成事件
-        /// </summary>
-        /// <param name="createdNotificationDistributedEvent"></param>
-        public void AddCreatedNotificationDistributedEvent(
-            CreatedNotificationDistributedEvent createdNotificationDistributedEvent)
-        {
-            AddDistributedEvent(createdNotificationDistributedEvent);
+            AddLocalEvent(createdNotificationLocalEvent);
         }
     }
 }

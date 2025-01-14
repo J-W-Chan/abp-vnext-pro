@@ -1,14 +1,12 @@
-using Lion.AbpPro.NotificationManagement.Localization;
-using Volo.Abp.Authorization.Permissions;
-using Volo.Abp.Localization;
-
 namespace Lion.AbpPro.NotificationManagement.Permissions
 {
     public class NotificationManagementPermissionDefinitionProvider : PermissionDefinitionProvider
     {
         public override void Define(IPermissionDefinitionContext context)
         {
-            var myGroup = context.AddGroup(NotificationManagementPermissions.GroupName, L("Permission:NotificationManagement"));
+            var abpIdentityGroup = context.GetGroup("AbpIdentity");
+            var notificationManagement = abpIdentityGroup.AddPermission(NotificationManagementPermissions.NotificationManagement.Default, L("Permission:NotificationManagement"));
+            var notificationSubscriptionManagement = abpIdentityGroup.AddPermission(NotificationManagementPermissions.NotificationSubscriptionManagement.Default, L("Permission:NotificationSubscriptionManagement"));
         }
 
         private static LocalizableString L(string name)
