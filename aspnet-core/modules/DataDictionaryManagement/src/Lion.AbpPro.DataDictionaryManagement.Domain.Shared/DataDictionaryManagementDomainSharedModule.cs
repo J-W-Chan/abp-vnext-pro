@@ -1,15 +1,10 @@
-using Volo.Abp.Modularity;
-using Volo.Abp.Localization;
-using Lion.AbpPro.DataDictionaryManagement.Localization;
-using Volo.Abp.Localization.ExceptionHandling;
-using Volo.Abp.Validation;
-using Volo.Abp.Validation.Localization;
-using Volo.Abp.VirtualFileSystem;
+using Lion.AbpPro.Core;
 
 namespace Lion.AbpPro.DataDictionaryManagement
 {
     [DependsOn(
-        typeof(AbpValidationModule)
+        typeof(AbpValidationModule),
+        typeof(AbpProCoreModule)
     )]
     public class DataDictionaryManagementDomainSharedModule : AbpModule
     {
@@ -23,14 +18,14 @@ namespace Lion.AbpPro.DataDictionaryManagement
             Configure<AbpLocalizationOptions>(options =>
             {
                 options.Resources
-                    .Add<DataDictionaryManagementResource>("en")
+                    .Add<DataDictionaryManagementResource>(DataDictionaryManagementConsts.DefaultCultureName)
                     .AddBaseTypes(typeof(AbpValidationResource))
                     .AddVirtualJson("/Localization/DataDictionaryManagement");
             });
 
             Configure<AbpExceptionLocalizationOptions>(options =>
             {
-                options.MapCodeNamespace("DataDictionaryManagement", typeof(DataDictionaryManagementResource));
+                options.MapCodeNamespace(DataDictionaryManagementConsts.NameSpace, typeof(DataDictionaryManagementResource));
             });
         }
     }

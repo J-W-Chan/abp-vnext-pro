@@ -1,10 +1,6 @@
-using Microsoft.Extensions.DependencyInjection;
-using Volo.Abp;
-using Volo.Abp.Authorization;
-using Volo.Abp.Autofac;
-using Volo.Abp.Data;
-using Volo.Abp.Modularity;
-using Volo.Abp.Threading;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Volo.Abp.EventBus.Distributed;
+using Volo.Abp.EventBus.Local;
 
 namespace Lion.AbpPro.NotificationManagement
 {
@@ -18,6 +14,10 @@ namespace Lion.AbpPro.NotificationManagement
     {
         public override void ConfigureServices(ServiceConfigurationContext context)
         {
+            // 单元测试取消本地事件
+            context.Services.Replace(ServiceDescriptor.Singleton<ILocalEventBus>(NullLocalEventBus.Instance));
+            // 单元测试取消集成事件
+            context.Services.Replace(ServiceDescriptor.Singleton<IDistributedEventBus>(NullDistributedEventBus.Instance));
             context.Services.AddAlwaysAllowAuthorization();
         }
 

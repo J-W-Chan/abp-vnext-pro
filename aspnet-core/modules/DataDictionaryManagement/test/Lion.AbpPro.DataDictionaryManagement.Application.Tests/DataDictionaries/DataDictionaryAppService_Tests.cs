@@ -1,9 +1,3 @@
-using System.Linq;
-using System.Threading.Tasks;
-using Lion.AbpPro.DataDictionaryManagement.DataDictionaries.Dtos;
-using Shouldly;
-using Xunit;
-
 namespace Lion.AbpPro.DataDictionaryManagement.DataDictionaries
 {
     public class DataDictionaryAppService_Tests : DataDictionaryManagementApplicationTestBase
@@ -53,7 +47,7 @@ namespace Lion.AbpPro.DataDictionaryManagement.DataDictionaries
         {
             var input = new CreateDataDictinaryDetailInput()
             {
-                Id = DataDictionaryManagementConsts.SeedDataDictionaryId,
+                Id = DataDictionaryManagementTestConsts.SeedDataDictionaryId,
                 Code = "Detail",
                 DisplayText = "明细",
                 Description = "单元测试",
@@ -64,7 +58,7 @@ namespace Lion.AbpPro.DataDictionaryManagement.DataDictionaries
             var result = await _dataDictionaryAppService.GetPagingDetailListAsync(
                 new PagingDataDictionaryDetailInput()
                 {
-                    DataDictionaryId = DataDictionaryManagementConsts.SeedDataDictionaryId,
+                    DataDictionaryId = DataDictionaryManagementTestConsts.SeedDataDictionaryId,
                     Filter = "Detail"
                 }
             );

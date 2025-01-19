@@ -1,12 +1,6 @@
-using Microsoft.Extensions.DependencyInjection;
-using Volo.Abp;
-using Volo.Abp.Authorization;
-using Volo.Abp.Autofac;
-using Volo.Abp.BackgroundJobs;
-using Volo.Abp.Data;
-using Volo.Abp.IdentityServer;
-using Volo.Abp.Modularity;
-using Volo.Abp.Threading;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Volo.Abp.EventBus.Distributed;
+using Volo.Abp.EventBus.Local;
 
 namespace Lion.AbpPro
 {
@@ -18,18 +12,7 @@ namespace Lion.AbpPro
         )]
     public class AbpProTestBaseModule : AbpModule
     {
-        public override void PreConfigureServices(ServiceConfigurationContext context)
-        {
-            PreConfigure<AbpIdentityServerBuilderOptions>(options =>
-            {
-                options.AddDeveloperSigningCredential = false;
-            });
-
-            PreConfigure<IIdentityServerBuilder>(identityServerBuilder =>
-            {
-                identityServerBuilder.AddDeveloperSigningCredential(false, System.Guid.NewGuid().ToString());
-            });
-        }
+    
 
         public override void ConfigureServices(ServiceConfigurationContext context)
         {
@@ -38,6 +21,10 @@ namespace Lion.AbpPro
                 options.IsJobExecutionEnabled = false;
             });
 
+            // 单元测试取消本地事件
+            context.Services.Replace(ServiceDescriptor.Singleton<ILocalEventBus>(NullLocalEventBus.Instance));
+            // 单元测试取消集成事件
+            context.Services.Replace(ServiceDescriptor.Singleton<IDistributedEventBus>(NullDistributedEventBus.Instance));
             context.Services.AddAlwaysAllowAuthorization();
         }
 

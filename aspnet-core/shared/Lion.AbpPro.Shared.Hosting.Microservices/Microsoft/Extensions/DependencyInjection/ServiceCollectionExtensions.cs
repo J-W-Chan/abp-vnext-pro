@@ -1,7 +1,3 @@
-using System;
-using Consul;
-using Microsoft.Extensions.Configuration;
-
 namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions

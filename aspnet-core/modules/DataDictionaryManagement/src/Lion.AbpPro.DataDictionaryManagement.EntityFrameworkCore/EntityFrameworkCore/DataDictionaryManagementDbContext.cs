@@ -1,8 +1,3 @@
-using Lion.AbpPro.DataDictionaryManagement.DataDictionaries.Aggregates;
-using Microsoft.EntityFrameworkCore;
-using Volo.Abp.Data;
-using Volo.Abp.EntityFrameworkCore;
-
 namespace Lion.AbpPro.DataDictionaryManagement.EntityFrameworkCore
 {
     [ConnectionStringName(DataDictionaryManagementDbProperties.ConnectionStringName)]
@@ -11,7 +6,7 @@ namespace Lion.AbpPro.DataDictionaryManagement.EntityFrameworkCore
         /* Add DbSet for each Aggregate Root here. Example:
          * public DbSet<Question> Questions { get; set; }
          */
-        public DbSet<DataDictionary> DataDictionary { get; set; }
+        public DbSet<DataDictionary> DataDictionaries { get; set; }
         
         public DataDictionaryManagementDbContext(DbContextOptions<DataDictionaryManagementDbContext> options) 
             : base(options)
